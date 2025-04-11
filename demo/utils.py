@@ -416,17 +416,11 @@ def gemini_encode_image(image_path):
 
 # Initialize S3 client only if all required credentials are available
 try:
-    access_key, secret_key, region = get_aws_credentials()
-    session = boto3.Session(
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key,
-        region_name=region
-    )
     s3_client = boto3.client(
         's3',
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key,
-        region_name=region
+        aws_access_key_id=st.secrets["access_key_id"],
+        aws_secret_access_key=st.secrets["secret_access_key"],
+        region_name=st.secrets["region"]
     )
     bucket_name = 'DRML-demo-v1'
     s3_available = True
@@ -461,20 +455,6 @@ def upload_to_s3(file_name, content, content_type):
         except Exception as e:
             print(f"Failed to upload to S3: {e}")
             time.sleep(1)
-
-def get_aws_credentials():
-    # Try environment variables first (for Vercel)
-    access_key = os.environ.get("ACCESS_KEY_ID")
-    secret_key = os.environ.get("SECRET_ACCESS_KEY") 
-    region = os.environ.get("REGION")
-    
-    # Fall back to Streamlit secrets (for local development)
-    if not access_key or not secret_key or not region:
-        access_key = st.secrets.get("access_key_id")
-        secret_key = st.secrets.get("secret_access_key")
-        region = st.secrets.get("region")
-    
-    return access_key, secret_key, region
 
 if __name__ == "__main__":
     pass
