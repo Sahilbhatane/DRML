@@ -1,0 +1,15 @@
+[browser]
+gatherUsageStats = false
+
+[server]
+enableStaticServing = true
+
+[global]
+showWarningOnDirectExecution = false
+
+[theme]
+base = "light"
+
+[ui]
+hideTopBar = true
+hideSidebarNav = true 
