@@ -156,9 +156,11 @@ def run():
             # If examples directory doesn't exist, create it
             if not os.path.exists(examples_dir):
                 os.makedirs(examples_dir, exist_ok=True)
-                st.warning(f"Created examples directory at {examples_dir}")
+                # Hide warning in production
+                # st.warning(f"Created examples directory at {examples_dir}")
                 
-        st.info(f"Looking for examples in: {examples_dir}")
+        # Hide info message in production
+        # st.info(f"Looking for examples in: {examples_dir}")
                 
         col1, col2 = st.columns(2)
 

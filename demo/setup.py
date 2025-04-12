@@ -11,16 +11,21 @@ def get_secret(key, default=None, section=None):
     except:
         return default
 
-def setup_examples():
+def setup_examples(show_debug=False):
     """
     Copy example files to the correct location for Streamlit Cloud deployment.
     This should be called at the beginning of the app.
+    
+    Args:
+        show_debug: If True, display debug messages
     """
     # Check if we're in Streamlit Cloud environment
     is_cloud = os.path.exists("/mount/src")
     
     if is_cloud:
-        st.info("Setting up example files for Streamlit Cloud deployment...")
+        # Only show this message if debugging is enabled
+        if show_debug:
+            st.info("Setting up example files for Streamlit Cloud deployment...")
         
         # Define source and destination paths using secrets if available
         src_dir = get_secret("example_images_source", 
@@ -34,10 +39,11 @@ def setup_examples():
         # Create destination directory if it doesn't exist
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir, exist_ok=True)
-            st.info(f"Created directory: {dest_dir}")
+            if show_debug:
+                st.info(f"Created directory: {dest_dir}")
             
         # Debug mode from secrets
-        debug_mode = get_secret("debug_mode", False, section="paths")
+        debug_mode = get_secret("debug_mode", False, section="paths") and show_debug
         if debug_mode:
             st.info(f"Debug mode: ON")
             st.info(f"Working directory: {os.getcwd()}")
@@ -54,9 +60,11 @@ def setup_examples():
                         # Copy the file if it doesn't exist in destination
                         if not os.path.exists(dest_file):
                             shutil.copy2(src_file, dest_file)
-                            st.success(f"Copied {file_name} to examples directory")
+                            if show_debug:
+                                st.success(f"Copied {file_name} to examples directory")
             else:
-                st.warning(f"Source directory {src_dir} not found")
+                if show_debug:
+                    st.warning(f"Source directory {src_dir} not found")
                 
                 # Try alternative paths if the main path isn't found
                 alternative_paths = [
@@ -68,7 +76,8 @@ def setup_examples():
                 
                 for alt_path in alternative_paths:
                     if os.path.exists(alt_path):
-                        st.info(f"Found alternative path: {alt_path}")
+                        if show_debug:
+                            st.info(f"Found alternative path: {alt_path}")
                         for file_name in os.listdir(alt_path):
                             if file_name.endswith(('.png', '.jpg', '.jpeg')):
                                 src_file = os.path.join(alt_path, file_name)
@@ -77,14 +86,16 @@ def setup_examples():
                                 # Copy the file if it doesn't exist in destination
                                 if not os.path.exists(dest_file):
                                     shutil.copy2(src_file, dest_file)
-                                    st.success(f"Copied {file_name} from {alt_path}")
+                                    if show_debug:
+                                        st.success(f"Copied {file_name} from {alt_path}")
                 
             # Debug: List files in destination directory
             if os.path.exists(dest_dir) and debug_mode:
                 st.info(f"Files in examples directory: {os.listdir(dest_dir)}")
             
         except Exception as e:
-            st.error(f"Error setting up examples: {str(e)}")
+            if show_debug:
+                st.error(f"Error setting up examples: {str(e)}")
 
 if __name__ == "__main__":
-    setup_examples() 
+    setup_examples(True)  # True for debugging when run directly 

@@ -9,7 +9,7 @@ try:
     from setup import setup_examples
 except ImportError:
     # Define a fallback function if import fails
-    def setup_examples():
+    def setup_examples(show_debug=False):
         pass
 
 st.set_page_config(
@@ -91,8 +91,8 @@ try:
     st.title("🎨 DRML")
     st.subheader("Turn wireframe sketches into HTML/CSS")
     
-    # Set up examples files
-    setup_examples()
+    # Set up examples files - debug mode OFF for production
+    setup_examples(show_debug=False)
     
     # Check Python version
     if sys.version_info < (3, 7):
@@ -137,17 +137,7 @@ try:
     for dir_name in required_dirs:
         if not os.path.isdir(dir_name):
             os.makedirs(dir_name, exist_ok=True)
-            st.warning(f"Created missing directory: {dir_name}")
             
-            # Debug info for deployment
-            st.markdown(f"""
-            <div class="info-container">
-                <p>Working directory: {os.getcwd()}</p>
-                <p>Directory structure:</p>
-                <pre>{os.listdir('.')}</pre>
-            </div>
-            """, unsafe_allow_html=True)
-    
     # Run the main application
     run()
     
