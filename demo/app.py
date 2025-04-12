@@ -82,6 +82,10 @@ def check_chrome_installation():
             except:
                 pass
         
+        # For Streamlit Cloud, assume Chrome is available
+        if os.path.exists("/mount/src"):
+            return True, "Chrome is assumed to be available on Streamlit Cloud."
+            
         return False, "Chrome browser not found. Screenshot functionality may not work."
     except Exception as e:
         return False, f"Error checking Chrome installation: {str(e)}"
@@ -99,21 +103,23 @@ try:
         st.error("Python 3.7 or higher is required to run this application.")
         st.stop()
     
-    # Check for Chrome browser
-    chrome_available, chrome_msg = check_chrome_installation()
-    if not chrome_available:
-        st.markdown(f"""
-        <div class="warning-container">
-            <h3>⚠️ Chrome Browser Not Detected</h3>
-            <p>{chrome_msg}</p>
-            <p>The application will use a fallback method for screenshots, but for best results:
-               <ol>
-                  <li>Install Google Chrome</li>
-                  <li>Restart the application</li>
-               </ol>
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+    # Check for Chrome browser - but skip warning on Streamlit Cloud
+    is_streamlit_cloud = os.path.exists("/mount/src")
+    if not is_streamlit_cloud:
+        chrome_available, chrome_msg = check_chrome_installation()
+        if not chrome_available:
+            st.markdown(f"""
+            <div class="warning-container">
+                <h3>⚠️ Chrome Browser Not Detected</h3>
+                <p>{chrome_msg}</p>
+                <p>The application will use a fallback method for screenshots, but for best results:
+                <ol>
+                    <li>Install Google Chrome</li>
+                    <li>Restart the application</li>
+                </ol>
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
     
     # Check for required packages
     try:
