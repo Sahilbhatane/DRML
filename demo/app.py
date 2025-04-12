@@ -13,7 +13,7 @@ except ImportError:
         pass
 
 st.set_page_config(
-    page_title="Sketch2Code",
+    page_title="DRMLS",
     page_icon="🎨",
     layout="wide",
     initial_sidebar_state="expanded"
