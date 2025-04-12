@@ -148,49 +148,52 @@ def run():
     with st.expander("👨‍🎨 Need some inspirations? Try out these example sketches!"):
         st.write("Download one of the example sketches below to get started:")
         
+        # Set up the example images directory path
+        examples_dir = "examples"
+        # Check if we're in Streamlit Cloud environment
+        if os.path.exists("/mount/src"):
+            examples_dir = os.path.join(os.path.dirname(__file__), "examples")
+            # If examples directory doesn't exist, create it
+            if not os.path.exists(examples_dir):
+                os.makedirs(examples_dir, exist_ok=True)
+                st.warning(f"Created examples directory at {examples_dir}")
+                
+        st.info(f"Looking for examples in: {examples_dir}")
+                
         col1, col2 = st.columns(2)
 
-        with col1:
-            st.image("examples/sketch_example1.png", caption="Product Page Sketch")
-            st.write("A mobile shopping app product page, perfect for browsing and purchasing fashion items, with options to select size, color, and quantity.")
-            st.download_button(
-                label="Download Example Sketch 1",
-                data=open("examples/sketch_example1.png", "rb").read(),  # Provide the path to the image
-                file_name="example_sketch_1.png",
-                mime="image/png"
-            )
+        # Function to safely handle image display and download
+        def display_example_image(col, image_path, caption, button_label, download_name):
+            try:
+                image_full_path = os.path.join(examples_dir, image_path)
+                if os.path.exists(image_full_path):
+                    col.image(image_full_path, caption=caption)
+                    col.write(caption)
+                    with open(image_full_path, "rb") as f:
+                        col.download_button(
+                            label=button_label,
+                            data=f.read(),
+                            file_name=download_name,
+                            mime="image/png"
+                        )
+                else:
+                    col.warning(f"Example image not found: {image_full_path}")
+                    col.write(caption)
+            except Exception as e:
+                col.error(f"Error loading example image: {str(e)}")
 
-        with col2:
-            st.image("examples/sketch_example2.png", caption="Article/Content Page Sketch")
-            st.write("A blog or news article layout for a media platform, featuring a large header image, article text, and additional sections for related content.")
-            st.download_button(
-                label="Download Example Sketch 2",
-                data=open("examples/sketch_example2.png", "rb").read(),  # Provide the path to the image
-                file_name="example_sketch_2.png",
-                mime="image/png"
-            )
+        # Display example images using the safe function
+        display_example_image(col1, "sketch_example1.png", "Product Page Sketch", 
+                             "Download Example Sketch 1", "example_sketch_1.png")
+        display_example_image(col2, "sketch_example2.png", "Article/Content Page Sketch", 
+                             "Download Example Sketch 2", "example_sketch_2.png")
 
         col3, col4 = st.columns(2)
-
-        with col3:
-            st.image("examples/sketch_example3.png", caption="E-Commerce Page Sketch")
-            st.write("A home décor or electronics store page showcasing detailed product information, with a carousel for browsing related or recommended products.")
-            st.download_button(
-                label="Download Example Sketch 3",
-                data=open("examples/sketch_example3.png", "rb").read(),  # Provide the path to the image
-                file_name="example_sketch_3.png",
-                mime="image/png"
-            )
-
-        with col4:
-            st.image("examples/sketch_example9.png", caption="Dashboard/Table Layout Sketch")
-            st.write("An analytics dashboard for managing employee data, displaying a table of employee details with options to filter, sort, and select individuals for further actions.")
-            st.download_button(
-                label="Download Example Sketch 4",
-                data=open("examples/sketch_example9.png", "rb").read(),  # Provide the path to the image
-                file_name="example_sketch_4.png",
-                mime="image/png"
-            )
+        
+        display_example_image(col3, "sketch_example3.png", "E-Commerce Page Sketch", 
+                             "Download Example Sketch 3", "example_sketch_3.png")
+        display_example_image(col4, "sketch_example9.png", "Dashboard/Table Layout Sketch", 
+                             "Download Example Sketch 4", "example_sketch_4.png")
 
     # Initialize the session state
     if "public_messages" not in st.session_state:
